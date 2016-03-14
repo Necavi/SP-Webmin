@@ -1,0 +1,81 @@
+{% extends "header.html" %}
+{% macro print_permissions(identifier, permissions, server_id, allow_removal=false) %}
+    <a data-toggle="collapse" data-target="#{{ "server" + server_id | string + identifier }}">
+        <div class="list-group-item">
+            {{ identifier }}
+            {% if not allow_removal %}
+                <button onclick="event.stopPropagation();
+                        location.href='{{ url_for("player_detail", identifier=identifier.rpartition(".")[2]) }}'"
+                        class="btn btn-primary">
+                    Edit</button>
+            {% endif %}
+        </div>
+    </a>
+    <div class="collapse list-group-submenu" id="{{ "server" + server_id | string + identifier }}">
+        {% for permission in permissions | sort %}
+            <div class="list-group-item">
+                {{ permission }}
+                {% if allow_removal and current_user.has_permission("web.permission.remove") %}
+                    <button class="btn btn-primary" onclick="post('{{ url_for("remove_object_permission") }}', {
+                            identifier: '{{ obj.identifier }}',
+                            node: '{{ permission }}',
+                            server_id: '{{ server_id}}' })">Remove</button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}s
+{% block title %}{{ obj.identifier }}{% endblock %}
+{% block body %}
+    <div class="modal fade" id="addServer" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add a new server</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Some text in the modal.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div id="MainMenu">
+            {% set perms = {} %}
+            {{ obj.get_permission_heirarchy_by_server(perms) | default("", true) }}
+            {% for server_id, identifiers in perms | dictsort %}
+                <a data-toggle="collapse" data-target="#{{ "server" + server_id | string }}">
+                    <div class="list-group-item">
+                            {{ servers.get(server_id, "Unknown Server") }}
+                    </div>
+                </a>
+                <div class="collapse list-group-submenu" id="{{ "server" + server_id | string }}">
+                    {% if obj.identifier in identifiers %}
+                        {{ print_permissions(obj.identifier, identifiers.pop(obj.identifier), server_id, true) }}
+                    {% endif %}
+                    {% for identifier, permissions in identifiers | dictsort %}
+                        {{ print_permissions(identifier, permissions, server_id) }}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+        {% if current_user.has_permission("web.permission.add") %}
+            <form action="{{ url_for("player_detail", identifier=obj.identifier) }}" method="post">
+                <label for="node">Node:</label>
+                <input name="node" id="node" type="text">
+                <label for="server">Server:</label>
+                <select name="server" id="server">
+                    {% for server_id, server_name in servers | dictsort %}
+                        <option value="{{ server_id }}">{{ server_name }} ({{ server_id }})</option>
+                    {% endfor %}
+                    <option onclick="$('#myModal').modal('toggle')">Add new</option>
+                </select>
+                <button class="btn btn-primary">Add permission node</button>
+            </form>
+        {% endif %}
+    </div>
+{% endblock %}

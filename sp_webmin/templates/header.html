@@ -1,0 +1,60 @@
+{% set pages = [("Home", "index"), ("List Objects", "list_players")] %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>{% block title %}Title{% endblock %}</title>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for("static", filename="css/style.css") }}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="{{ url_for("static", filename="js/site.js") }}"></script>
+</head>
+<body>
+    {{ current_user.username }}
+    <br>
+    <br>
+        <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">SP Webmin</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            {% for name, endpoint in pages %}
+                {% if current_user.has_permission("web.pages." + endpoint) %}
+                    <li><a href="{{ url_for(endpoint) }}">{{ name }}</a></li>
+                {% endif %}
+            {% endfor %}
+          </ul>
+          <ul class="nav navbar-nav navbar-right">
+            <li><span class="navbar-text">{{ current_user.username }}</span></li>
+            <li>
+                {% if current_user.is_authenticated %}
+                    <form action="{{ url_for("logout") }}" method="post">
+                        <button class="navbar-btn btn btn-primary btn-block" type="submit">Log Out</button>
+                    </form>
+                {% else %}
+                    <form action="{{ url_for("register_start") }}">
+                        <input type="image" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png">
+                    </form>
+                {% endif %}
+            </li>
+          </ul>
+        </div><!--/.nav-collapse -->
+      </div>
+    </nav>
+    <br>
+    <br>
+    {% block body %}
+    {% endblock %}
+</body>
+</html>

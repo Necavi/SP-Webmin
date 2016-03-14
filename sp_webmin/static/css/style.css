@@ -1,0 +1,20 @@
+form {
+    display: inline;
+}
+.list-group.panel > .list-group-item {
+  border: 4px;
+}
+.list-group-submenu {
+  margin-left:20px;
+}
+.list-group-item {
+    cursor: pointer;
+    cursor: hand;
+}
+.list-group-header {
+    padding: 0;
+    border: 0;
+}
+a:hover {
+    text-decoration: none;
+}
