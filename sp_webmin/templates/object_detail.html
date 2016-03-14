@@ -72,7 +72,7 @@
                     {% for server_id, server_name in servers | dictsort %}
                         <option value="{{ server_id }}">{{ server_name }} ({{ server_id }})</option>
                     {% endfor %}
-                    <option onclick="$('#myModal').modal('toggle')">Add new</option>
+                    <option onclick="$('#addServer').modal('toggle')">Add new</option>
                 </select>
                 <button class="btn btn-primary">Add permission node</button>
             </form>

@@ -2,35 +2,15 @@ import re
 
 from flask import session, redirect, url_for, render_template, request
 from flask.ext.openid import OpenID, COMMON_PROVIDERS
-from flask.ext.login import LoginManager, AnonymousUserMixin, \
-    current_user, login_user, logout_user
+from flask.ext.login import LoginManager, current_user, login_user, logout_user
 
 from . import app, db
-from .models import User, Permission, PermissionObject, Server
+from .models import User, Permission, PermissionObject, Server, AnonymousUser
 
 oid = OpenID(app)
 _steam_id_re = re.compile("steamcommunity.com/openid/id/(.*?)$")
 login_manager = LoginManager(app)
 
-
-class AnonymousUser(AnonymousUserMixin):
-    permissions = set()
-    permission_cache = set()
-    username = "Anonymous"
-
-    def __init__(self):
-        guest_group = PermissionObject.query.filter_by(identifier=app.config.get("GUEST_GROUP", "guest")).first()
-        if guest_group is None:
-            return
-        self.permissions.update([perm.node for perm in guest_group.permissions])
-        self.permissions.add("web.pages.index")
-        self.permission_cache.add(User._compile_permission("web.pages.index"))
-
-    def has_permission(self, permission):
-        for perm in self.permission_cache:
-            if perm.match(permission):
-                return True
-        return False
 
 login_manager.anonymous_user = AnonymousUser
 

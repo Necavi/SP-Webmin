@@ -3,7 +3,7 @@ import requests
 
 from sqlalchemy import Column, Integer, String, BigInteger, UniqueConstraint, Table, Enum, ForeignKey
 from sqlalchemy.orm import relationship
-from flask.ext.login import UserMixin
+from flask.ext.login import UserMixin, AnonymousUserMixin
 
 from . import db
 from . import app
@@ -19,21 +19,58 @@ parents_table = Table(
 )
 
 
-class User(Base, UserMixin):
-    __tablename__ = "users"
-    id = Column(Integer, unique=True, primary_key=True, autoincrement=True)
-    username = ""
-    email = Column(String(256), unique=True, nullable=True)
-    steamid = Column(BigInteger, unique=True)
-    permissions = set()
-    permission_cache = set()
-
-    def __init__(self, steamid):
-        self.steamid = steamid
+class PermissionSet(set):
+    permissions_cache = set()
 
     @staticmethod
     def _compile_permission(permission):
         return re.compile(permission.replace('.', '\\.').replace('*', '(.*)'))
+
+    def update(self, *args, **kwargs):
+        for arg in args:
+            for value in arg:
+                self.add(value)
+
+    def add(self, perm):
+        self.permissions_cache.add(self._compile_permission(perm))
+
+    def remove(self, perm):
+        super().remove(perm)
+        self.permissions_cache.remove(self._compile_permission(perm))
+
+    def has(self, perm):
+        for node in self.permissions_cache:
+            if node.match(perm):
+                return True
+        return False
+
+
+class PermissionBase(object):
+    username = "Base"
+    permissions = PermissionSet()
+
+    def has_permission(self, permission):
+        return self.permissions.has(permission)
+
+
+class AnonymousUser(PermissionBase, AnonymousUserMixin):
+    username = "Anonymous"
+
+    def __init__(self):
+        guest_group = PermissionObject.query.filter_by(identifier=app.config.get("GUEST_GROUP", "guest")).first()
+        if guest_group is None:
+            return
+        self.permissions.update([perm.node for perm in guest_group.permissions])
+
+
+class User(PermissionBase, Base, UserMixin):
+    __tablename__ = "users"
+    id = Column(Integer, unique=True, primary_key=True, autoincrement=True)
+    email = Column(String(256), unique=True, nullable=True)
+    steamid = Column(BigInteger, unique=True)
+
+    def __init__(self, steamid):
+        self.steamid = steamid
 
     @staticmethod
     def get(steamid):
@@ -47,20 +84,10 @@ class User(Base, UserMixin):
                 app.config.get("DEFAULT_GROUP", "default")).flatten_permissions())
         else:
             user.permissions.update(obj.flatten_permissions())
-        user.permission_cache.clear()
-        for permission in user.permissions:
-            user.permission_cache.add(User._compile_permission(permission))
         steam_user = requests.get(steam_url.format(app.config["STEAM_API_KEY"], steamid)).json()
         user.username = steam_user['response']['players'][0]['personaname']
         user.permissions.add("web.pages.index")
-        user.permission_cache.add(User._compile_permission("web.pages.index"))
         return user
-
-    def has_permission(self, permission):
-        for perm in self.permission_cache:
-            if perm.match(permission):
-                return True
-        return False
 
     def get_id(self):
         return self.steamid
