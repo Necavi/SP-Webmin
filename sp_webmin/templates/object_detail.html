@@ -35,7 +35,11 @@
                     <h4 class="modal-title">Add a new server</h4>
                 </div>
                 <div class="modal-body">
-                    <p>Some text in the modal.</p>
+                    <form action="{{ url_for("add_server", next=url_for("player_detail", identifier=obj.identifier)) }}" method="post">
+                        <label for="server_name">Server Name</label>
+                        <input type="text" id="server_name" name="server_name">
+                        <button type="submit">Add Server</button>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

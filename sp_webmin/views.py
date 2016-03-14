@@ -79,3 +79,11 @@ def remove_object_permission():
         db.session.delete(rem_perm)
         db.session.commit()
     return redirect(url_for("player_detail", identifier=request.form["identifier"]))
+
+
+@app.route("/add_server", methods=["POST"])
+def add_server():
+    server = Server(name=request.form["server_name"])
+    db.session.add(server)
+    db.session.commit()
+    return redirect(request.args["next"])
