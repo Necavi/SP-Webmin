@@ -21,3 +21,12 @@ function post(path, params, method) {
     document.body.appendChild(form);
     form.submit();
 }
+function add_server(url, name, select) {
+    $.post(url, {server_name: name}, function(data) {
+        select
+         .append($("<option/>")
+         .val(data["server_id"])
+         .text(data["server_name"] + " (" + data["server_id"] + ")"));
+    }, "json");
+    return false;
+}

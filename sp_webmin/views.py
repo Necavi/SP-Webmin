@@ -1,4 +1,5 @@
 import re
+import json
 
 from flask import session, redirect, url_for, render_template, request
 from flask.ext.openid import OpenID, COMMON_PROVIDERS
@@ -83,7 +84,14 @@ def remove_object_permission():
 
 @app.route("/add_server", methods=["POST"])
 def add_server():
-    server = Server(name=request.form["server_name"])
-    db.session.add(server)
-    db.session.commit()
-    return redirect(request.args["next"])
+    name = request.form["server_name"]
+    try:
+        server = Server(name=name)
+        db.session.add(server)
+        db.session.commit()
+    except:
+        server = Server.query.filter_by(name).first()
+    return json.dumps({
+        "server_id": server.id,
+        "server_name": server.name
+    })
