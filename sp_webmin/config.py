@@ -12,6 +12,9 @@ def load_config():
     else:
         config = ConfigObj()
         config["Default"] = {}
+        config["Default"]["SECRET_KEY"] = ""
+        config["Default"]["STEAM_API_KEY"] = ""
+        config["Default"]["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
         config.filename = path
         config.write()
         return {}
