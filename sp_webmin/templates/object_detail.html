@@ -2,25 +2,25 @@
 {% macro print_permissions(identifier, permissions, server_id, allow_removal=false) %}
     <a data-toggle="collapse" data-target="#{{ "server" + server_id | string + identifier }}">
         <div class="list-group-item">
-            {{ identifier }}
             {% if not allow_removal %}
                 <button onclick="event.stopPropagation();
                         location.href='{{ url_for("player_detail", identifier=identifier.rpartition(".")[2]) }}'"
-                        class="btn btn-primary">
+                        class="btn btn-primary btn-listbar">
                     Edit</button>
             {% endif %}
+            {{ identifier }}
         </div>
     </a>
     <div class="collapse list-group-submenu" id="{{ "server" + server_id | string + identifier }}">
         {% for permission in permissions | sort %}
             <div class="list-group-item">
-                {{ permission }}
                 {% if allow_removal and current_user.has_permission("web.permission.remove") %}
-                    <button class="btn btn-primary" onclick="post('{{ url_for("remove_object_permission") }}', {
+                    <button class="btn btn-primary btn-listbar" onclick="post('{{ url_for("remove_object_permission") }}', {
                             identifier: '{{ obj.identifier }}',
                             node: '{{ permission }}',
                             server_id: '{{ server_id}}' })">Remove</button>
                 {% endif %}
+                {{ permission }}
             </div>
         {% endfor %}
     </div>

@@ -9,7 +9,6 @@ form {
 }
 .list-group-item {
     cursor: pointer;
-    cursor: hand;
 }
 .list-group-header {
     padding: 0;
@@ -17,4 +16,7 @@ form {
 }
 a:hover {
     text-decoration: none;
+}
+.btn-listbar {
+    margin-right: 5px;
 }

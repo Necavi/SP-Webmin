@@ -109,9 +109,11 @@ class Permission(Base):
 
 class PermissionObject(Base):
     __tablename__ = 'objects'
+    __table_args__ = (UniqueConstraint(
+        'identifier', 'object_type', name='identifier_type_uc'),)
 
     id = Column(Integer, primary_key=True)
-    identifier = Column(String(64), nullable=False, unique=True)
+    identifier = Column(String(64), nullable=False)
     type = Column(Enum('Group', 'Player'), name='object_type')
 
     permissions = relationship('Permission', backref='object')
