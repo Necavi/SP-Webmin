@@ -26,6 +26,7 @@
         </div>
     </div>
     <div class="container">
+        <h1>Player List</h1>
         <table class="table" id="objectList">
             <thead>
                 <tr>
@@ -37,7 +38,7 @@
                 {% for obj in objects %}
                     <tr>
                         <td><a href="{{ url_for("player_detail", identifier=obj.identifier) }}">{{ obj.name }}</a></td>
-                        <td><a href="{{ obj.steamUrl }}">{{ obj.identifier }}</a></td>
+                        <td><a href="{{ obj.steamUrl }}">{{ obj.formattedSteamId }}</a></td>
                     </tr>
                 {% endfor %}
             </tbody>

@@ -1,8 +1,11 @@
 import re
 import requests
 
+from valve.steam import id
+
 from sqlalchemy import Column, Integer, String, BigInteger, UniqueConstraint, Table, Enum, ForeignKey
 from sqlalchemy.orm import relationship, reconstructor
+
 from flask.ext.login import UserMixin, AnonymousUserMixin
 
 from . import db
@@ -118,6 +121,7 @@ class PermissionObject(Base):
     name = ""
     avatarUrl = ""
     steamUrl = ""
+    formattedSteamId = ""
 
     id = Column(Integer, primary_key=True)
     identifier = Column(String(64), nullable=False)
@@ -138,12 +142,22 @@ class PermissionObject(Base):
     @reconstructor
     def on_load(self):
         self.name = self.identifier
+        self.formattedSteamId = self.identifier
         if self.type == "Player":
             steam_user = requests.get(steam_url.format(app.config["STEAM_API_KEY"], self.identifier)).json()
             if len(steam_user["response"]["players"]) > 0:
                 self.name = steam_user['response']['players'][0]['personaname']
                 self.avatarUrl = steam_user["response"]["players"][0]["avatarmedium"]
                 self.steamUrl = steam_user["response"]["players"][0]["profileurl"]
+            steam_id = id.SteamID.from_community_url("http://steamcommunity.com/profiles/" +
+                                                     str(self.identifier))
+            steamid_format = app.config.get("STEAMID_FORMAT", "")
+            if steamid_format == "Steam32":
+                self.formattedSteamId = steam_id.as_32()
+            elif steamid_format == "Steam2":
+                self.formattedSteamId = str(steam_id)
+            elif steamid_format == "Steam3":
+                self.formattedSteamId = "[U:1:{}]".format(int(steam_id.account_number))
 
     @staticmethod
     def get(identifier):

@@ -14,6 +14,7 @@ def load_config():
         config["Default"] = {}
         config["Default"]["SECRET_KEY"] = ""
         config["Default"]["STEAM_API_KEY"] = ""
+        config["Default"]["SteamID Format"] = "Steam64"
         config["Default"]["SQLALCHEMY_DATABASE_URI"] = "sqlite://"
         config.filename = path
         config.write()
