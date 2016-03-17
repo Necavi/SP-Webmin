@@ -69,6 +69,8 @@ class User(PermissionBase, Base, UserMixin):
     email = Column(String(256), unique=True, nullable=True)
     steamid = Column(BigInteger, unique=True)
 
+    avatarUrl = ""
+
     def __init__(self, steamid):
         self.steamid = steamid
 
@@ -86,6 +88,7 @@ class User(PermissionBase, Base, UserMixin):
             user.permissions.update(obj.flatten_permissions())
         steam_user = requests.get(steam_url.format(app.config["STEAM_API_KEY"], steamid)).json()
         user.username = steam_user['response']['players'][0]['personaname']
+        user.avatarUrl = steam_user["response"]["players"][0]["avatar"]
         user.permissions.add("web.pages.index")
         return user
 
@@ -141,7 +144,6 @@ class PermissionObject(Base):
                 self.name = steam_user['response']['players'][0]['personaname']
                 self.avatarUrl = steam_user["response"]["players"][0]["avatarmedium"]
                 self.steamUrl = steam_user["response"]["players"][0]["profileurl"]
-                print(self.steamUrl)
 
     @staticmethod
     def get(identifier):
