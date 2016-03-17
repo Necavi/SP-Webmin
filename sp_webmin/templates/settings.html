@@ -13,7 +13,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for key, value in config.items() %}
+                    {% for key, value in config|dictsort %}
                         <tr>
                             <td><label for="{{ key }}">{{ key|replace("_", " ")|title }}</label></td>
                             <td><input type="text" class="input-sm" size="128" maxlength="128" id="{{ key }}"

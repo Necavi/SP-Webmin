@@ -152,12 +152,10 @@ class PermissionObject(Base):
             steam_id = id.SteamID.from_community_url("http://steamcommunity.com/profiles/" +
                                                      str(self.identifier))
             steamid_format = app.config.get("STEAMID_FORMAT", "")
-            if steamid_format == "Steam32":
+            if steamid_format == "Steam3":
                 self.formattedSteamId = steam_id.as_32()
             elif steamid_format == "Steam2":
                 self.formattedSteamId = str(steam_id)
-            elif steamid_format == "Steam3":
-                self.formattedSteamId = "[U:1:{}]".format(int(steam_id.account_number))
 
     @staticmethod
     def get(identifier):

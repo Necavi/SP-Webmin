@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% macro print_permissions(identifier, permissions, server_id, allow_removal=false) %}
+{% macro print_permissions(identifier, display, permissions, server_id, allow_removal=false) %}
     <a data-toggle="collapse" data-target="#{{ "server" + server_id | string + identifier }}">
         <div class="list-group-item">
             {% if not allow_removal %}
@@ -8,7 +8,7 @@
                         class="btn btn-primary btn-listbar">
                     Edit</button>
             {% endif %}
-            {{ identifier }}
+            {{ display }}
         </div>
     </a>
     <div class="collapse list-group-submenu" id="{{ "server" + server_id | string + identifier }}">
@@ -25,7 +25,7 @@
         {% endfor %}
     </div>
 {% endmacro %}s
-{% block title %}{{ obj.identifier }}{% endblock %}
+{% block title %}{{ obj.name }}{% endblock %}
 {% block body %}
     <div class="modal fade" id="addServer" role="dialog">
         <div class="modal-dialog">
@@ -51,7 +51,7 @@
             {% if obj.type == "Player" %}
                 <img class="avatar" src="{{ obj.avatarUrl }}">
             {% endif %}
-            {{ obj.name + " (" + obj.identifier + ")" }}
+            {{ obj.name + " (" + obj.formattedSteamId + ")" }}
         </h2>
         <div id="MainMenu">
             {% set perms = {} %}
@@ -64,10 +64,10 @@
                 </a>
                 <div class="collapse list-group-submenu" id="{{ "server" + server_id | string }}">
                     {% if obj.identifier in identifiers %}
-                        {{ print_permissions(obj.name, identifiers.pop(obj.identifier), server_id, true) }}
+                        {{ print_permissions(obj.identifier, obj.name + " (" + obj.formattedSteamId + ")", identifiers.pop(obj.identifier), server_id, true) }}
                     {% endif %}
                     {% for identifier, permissions in identifiers | dictsort %}
-                        {{ print_permissions(identifier, permissions, server_id) }}
+                        {{ print_permissions(identifier, identifier, permissions, server_id) }}
                     {% endfor %}
                 </div>
             {% endfor %}
