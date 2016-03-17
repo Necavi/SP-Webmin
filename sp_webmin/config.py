@@ -18,3 +18,10 @@ def load_config():
         config.filename = path
         config.write()
         return {}
+
+
+def write_config(config):
+    new_config = ConfigObj()
+    new_config["Default"] = config
+    new_config.filename = path
+    new_config.write()

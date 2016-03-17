@@ -18,3 +18,10 @@ function add_object(url, identifier, type, selector) {
     }, "json");
     return false;
 }
+function insertNewSettingsRow() {
+    $("<tr><td><input type=\"text\" class=\"input-sm\" autocomplete=\"off\"\
+           onkeyup=\"$(this).parent().parent().find('.settingValue').\
+           attr('name', $(this).val())\"></td>\
+<td><input type=\"text\" class=\"input-sm settingValue\" autocomplete=\"off\"\
+           size=\"128\" maxlength=\"128\"></td></tr>").insertBefore("#end");
+}

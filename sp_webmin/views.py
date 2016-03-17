@@ -6,6 +6,7 @@ from flask.ext.openid import OpenID, COMMON_PROVIDERS
 from flask.ext.login import LoginManager, current_user, login_user, logout_user
 
 from . import app, db
+from .config import load_config, write_config
 from .models import User, Permission, PermissionObject, Server, AnonymousUser
 
 oid = OpenID(app)
@@ -113,3 +114,16 @@ def add_object():
         "url": url_for("player_detail", identifier=obj.identifier),
         "steamUrl": obj.steamUrl
     })
+
+
+@app.route("/settings")
+def settings():
+    return render_template("settings.html", config=load_config())
+
+
+@app.route("/update_settings", methods=["POST"])
+def update_settings():
+    config = {key.upper().replace(" ", "_"): value for key, value in request.form.items()}
+    write_config(config)
+    app.config.update(config)
+    return redirect(url_for("settings"))
