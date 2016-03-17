@@ -44,17 +44,17 @@ def load_user(user_id):
 
 @app.route("/")
 def index():
-    return render_template("header.html")
+    return render_template("layout.html")
 
 
-@app.route("/list_players", methods=["GET", "POST"])
-def list_players():
+@app.route("/player_list", methods=["GET", "POST"])
+def player_list():
     if request.method == "POST":
         obj = PermissionObject(type=request.form["type"], identifier=request.form["identifier"])
         db.session.add(obj)
         db.session.commit()
-        return redirect(url_for("list_players"))
-    return render_template("object_list.html", objects=PermissionObject.query.all())
+        return redirect(url_for("player_list"))
+    return render_template("player_list.html", objects=PermissionObject.query.all())
 
 
 @app.route("/player_detail/<identifier>", methods=["GET", "POST"])
@@ -84,14 +84,32 @@ def remove_object_permission():
 
 @app.route("/add_server", methods=["POST"])
 def add_server():
-    name = request.form["server_name"]
+    name = request.form["name"]
     try:
         server = Server(name=name)
         db.session.add(server)
         db.session.commit()
     except:
-        server = Server.query.filter_by(name).first()
+        server = Server.query.filter_by(name=name).first()
     return json.dumps({
-        "server_id": server.id,
-        "server_name": server.name
+        "id": server.id,
+        "name": server.name
+    })
+
+
+@app.route("/add_object", methods=["POST"])
+def add_object():
+    identifier = request.form["identifier"]
+    try:
+        obj = PermissionObject(identifier, request.form["type"])
+        db.session.add(obj)
+        db.session.commit()
+    except:
+        obj = PermissionObject.query.filter_by(identifier=identifier).first()
+    return json.dumps({
+        "identifier": obj.identifier,
+        "name": obj.name,
+        "type": obj.type,
+        "url": url_for("player_detail", identifier=obj.identifier),
+        "steamUrl": obj.steamUrl
     })

@@ -1,4 +1,4 @@
-{% extends "header.html" %}
+{% extends "layout.html" %}
 {% macro print_permissions(identifier, permissions, server_id, allow_removal=false) %}
     <a data-toggle="collapse" data-target="#{{ "server" + server_id | string + identifier }}">
         <div class="list-group-item">
@@ -47,6 +47,12 @@
         </div>
     </div>
     <div class="container">
+        <h2>
+            {% if obj.type == "Player" %}
+                <img class="avatar" src="{{ obj.avatarUrl }}">
+            {% endif %}
+            {{ obj.name + " (" + obj.identifier + ")" }}
+        </h2>
         <div id="MainMenu">
             {% set perms = {} %}
             {{ obj.get_permission_heirarchy_by_server(perms) | default("", true) }}
@@ -58,7 +64,7 @@
                 </a>
                 <div class="collapse list-group-submenu" id="{{ "server" + server_id | string }}">
                     {% if obj.identifier in identifiers %}
-                        {{ print_permissions(obj.identifier, identifiers.pop(obj.identifier), server_id, true) }}
+                        {{ print_permissions(obj.name, identifiers.pop(obj.identifier), server_id, true) }}
                     {% endif %}
                     {% for identifier, permissions in identifiers | dictsort %}
                         {{ print_permissions(identifier, permissions, server_id) }}

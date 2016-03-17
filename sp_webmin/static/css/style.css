@@ -9,6 +9,7 @@ form {
 }
 .list-group-item {
     cursor: pointer;
+    padding: 4px 8px;
 }
 .list-group-header {
     padding: 0;
@@ -19,4 +20,11 @@ a:hover {
 }
 .btn-listbar {
     margin-right: 5px;
+    padding: 4px 6px;
+    font-size: 12px;
+}
+.avatar {
+    border: 2px solid black;
+    border-radius: 10px;
+    box-shadow: 1px 1px 2px #888888;
 }

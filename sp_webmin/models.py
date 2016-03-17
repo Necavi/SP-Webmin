@@ -2,7 +2,7 @@ import re
 import requests
 
 from sqlalchemy import Column, Integer, String, BigInteger, UniqueConstraint, Table, Enum, ForeignKey
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, reconstructor
 from flask.ext.login import UserMixin, AnonymousUserMixin
 
 from . import db
@@ -112,10 +112,13 @@ class PermissionObject(Base):
     __table_args__ = (UniqueConstraint(
         'identifier', 'object_type', name='identifier_type_uc'),)
 
+    name = ""
+    avatarUrl = ""
+    steamUrl = ""
+
     id = Column(Integer, primary_key=True)
     identifier = Column(String(64), nullable=False)
     type = Column(Enum('Group', 'Player'), name='object_type')
-
     permissions = relationship('Permission', backref='object')
     children = relationship('PermissionObject',
                             secondary=parents_table,
@@ -124,9 +127,26 @@ class PermissionObject(Base):
                             backref='parents'
                             )
 
+    def __init__(self, identifier, type):
+        self.identifier = identifier
+        self.type = type
+        self.on_load()
+
+    @reconstructor
+    def on_load(self):
+        self.name = self.identifier
+        if self.type == "Player":
+            steam_user = requests.get(steam_url.format(app.config["STEAM_API_KEY"], self.identifier)).json()
+            if len(steam_user["response"]["players"]) > 0:
+                self.name = steam_user['response']['players'][0]['personaname']
+                self.avatarUrl = steam_user["response"]["players"][0]["avatarmedium"]
+                self.steamUrl = steam_user["response"]["players"][0]["profileurl"]
+                print(self.steamUrl)
+
     @staticmethod
     def get(identifier):
-        return PermissionObject.query.filter_by(identifier=identifier).first()
+        obj = PermissionObject.query.filter_by(identifier=identifier).first()
+        return obj
 
     def get_permissions(self):
         return set([perm.node for perm in self.permissions if perm.server_id == -1])

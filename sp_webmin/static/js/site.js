@@ -1,32 +1,20 @@
-function post(path, params, method) {
-    method = method || "post"; // Set method to post by default if not specified.
-
-    // The rest of this code assumes you are not using a library.
-    // It can be made less wordy if you use one.
-    var form = document.createElement("form");
-    form.setAttribute("method", method);
-    form.setAttribute("action", path);
-
-    for(var key in params) {
-        if(params.hasOwnProperty(key)) {
-            var hiddenField = document.createElement("input");
-            hiddenField.setAttribute("type", "hidden");
-            hiddenField.setAttribute("name", key);
-            hiddenField.setAttribute("value", params[key]);
-
-            form.appendChild(hiddenField);
-         }
-    }
-
-    document.body.appendChild(form);
-    form.submit();
-}
-function add_server(url, name, select) {
-    $.post(url, {server_name: name}, function(data) {
-        select
+function add_server(url, name, selector) {
+    $.post(url, {name: name}, function(data) {
+        selector
          .append($("<option/>")
-         .val(data["server_id"])
-         .text(data["server_name"] + " (" + data["server_id"] + ")"));
+         .val(data["id"])
+         .text(data["name"] + " (" + data["id"] + ")"));
+    }, "json");
+    return false;
+}
+
+function add_object(url, identifier, type, selector) {
+    $.post(url, {identifier: identifier, type: type}, function(data) {
+        var tr = $("<tr>" +
+            "<td><a href='" + data["url"] + "'>" + data["name"] + "</a></td>" +
+            "<td><a href='" + data["steamUrl"] + "'>" +
+            data["identifier"] + "</a></td></tr>");
+        selector.append(tr);
     }, "json");
     return false;
 }

@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block title %}Player List{% endblock %}
+{% block body %}
+    <div class="modal fade" id="addObject" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add a new player or group</h4>
+                </div>
+                <div class="modal-body">
+                    <label for="identifier">Identifier</label>
+                    <input type="text" id="identifier" name="identifier"><br>
+                    <label for="type">Type</label>
+                    <select name="type" id="type">
+                        <option value="Player">Player</option>
+                        <option value="Group">Group</option>
+                    </select><br>
+                    <button type="submit" onclick="add_object('{{ url_for("add_object") }}',
+                            $('#identifier').val(), $('#type').val(), $('#objectList').find('tbody'))" data-dismiss="modal">Add Object</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <table class="table" id="objectList">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>SteamID</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obj in objects %}
+                    <tr>
+                        <td><a href="{{ url_for("player_detail", identifier=obj.identifier) }}">{{ obj.name }}</a></td>
+                        <td><a href="{{ obj.steamUrl }}">{{ obj.identifier }}</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if current_user.has_permission("web.object.add") %}
+            <button class="btn btn-primary" onclick="$('#addObject').modal('toggle')">Add Player Or Group</button>
+        {% endif %}
+    </div>
+{% endblock %}
