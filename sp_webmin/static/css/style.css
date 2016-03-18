@@ -35,3 +35,13 @@ a:hover {
 .navbar-image {
     padding: 8px 15px;
 }
+.badInput {
+    border: 2px solid red;
+}
+.goodInput {
+    border: 2px solid green;
+}
+.modal-center {
+    vertical-align: middle;
+    margin: 0 auto;
+}

@@ -1,5 +1,6 @@
 import re
 import json
+import requests
 
 from datetime import timedelta
 
@@ -12,30 +13,18 @@ from .config import load_config, write_config
 from .models import User, Permission, PermissionObject, Server, AnonymousUser
 
 from .plugins import bans
+from .jinja_context import pages
 
 oid = OpenID(app)
 _steam_id_re = re.compile("steamcommunity.com/openid/id/(.*?)$")
 login_manager = LoginManager(app)
 
 
+steam_url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}"
 login_manager.anonymous_user = AnonymousUser
 
 app.register_blueprint(bans.plugin)
-pages = [("Home", "index"), ("List Players", "player_list"), ("Settings", "settings")]
 pages.extend(bans.pages)
-
-
-def format_date(date):
-    local_date = date + timedelta(hours=int(app.config.get("TIME_OFFSET", 0)))
-    return local_date.strftime(app.config.get("DATE_FORMAT", "%Y/%m/%d %H:%M:%S"))
-
-
-@app.context_processor
-def context():
-    return {
-        "pages": pages,
-        "format_date": format_date
-    }
 
 
 @app.route("/register")
@@ -148,3 +137,15 @@ def update_settings():
     write_config(config)
     app.config.update(config)
     return redirect(url_for("settings"))
+
+
+@app.route("/check_steam_id")
+def check_steam_id():
+    if "steamID" not in request.args:
+        return json.dumps({"result": False})
+    url = steam_url.format(app.config["STEAM_API_KEY"], request.args["steamID"])
+    steam_user = requests.get(url).json()
+    if len(steam_user["response"]["players"]) > 0:
+        return json.dumps({"result": True, "player": {"name": steam_user["response"]["players"][0]["personaname"]}})
+    else:
+        return json.dumps({"result": False})

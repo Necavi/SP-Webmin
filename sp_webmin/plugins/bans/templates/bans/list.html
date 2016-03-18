@@ -1,9 +1,96 @@
 {% extends "layout.html" %}
 {% block title %}Bans{% endblock %}
 {% block body %}
+    <div class="modal fade" id="addBan" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add a new ban</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="modal modal-sm modal-center fade" id="badid" role="dialog">
+                        <div class="modal-dialog modal-sm">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" onclick="$('#badid').modal('toggle');">&times;</button>
+                                    <h4 class="modal-title">Invalid SteamID</h4>
+                                </div>
+                                <div class="modal-body">
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" onclick="$('#badid').modal('toggle');">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <label for="inputPlayer">Player SteamID:</label>
+                    <input type="text" id="inputPlayer" name="player" autocomplete="off"
+                           onpaste="setTimeout(function() { validateSteamIDField('{{ url_for("check_steam_id") }}')}, 50)"
+                           onblur="validateSteamIDField('{{ url_for("check_steam_id") }}')">
+                    <br>
+                    <label id="name">Name: <input id="inputName" hidden="hidden" autocomplete="off">
+                        <span></span>
+                    </label>
+                    <br>
+                    <label for="inputDuration">Duration: </label>
+                    <input id="inputDuration" type="text" autocomplete="off" value="0"
+                           onkeyup="$('#actualDuration').val(
+                            calculateDurationInSeconds(
+                                $('#inputDuration').val(),
+                                $('#durationType').find('option:selected').val()
+                            ))">
+                    <label for="durationType">Units: </label>
+                    <select id="durationType" onchange="$('#actualDuration').val(
+                    calculateDurationInSeconds(
+                        $('#inputDuration').val(),
+                        $('#durationType').find('option:selected').val()
+                    ))">
+                        {% for unit in ("Seconds", "Minutes", "Hours", "Days", "Weeks", "Months", "Years") %}
+                            <option value="{{ unit }}" {% if unit == "Hours" %}selected{% endif %}>{{ unit }}</option>
+                        {% endfor %}
+                    </select>
+                    <input id="actualDuration" hidden="hidden" value="0" autocomplete="off">
+                    <br>
+                    <label for="server">Server:</label>
+                    <select name="server" id="server">
+                        {% for server_id, server_name in servers | dictsort %}
+                            <option value="{{ server_id }}">
+                                {{ server_name }} ({{ server_id }})</option>
+                        {% endfor %}
+                    </select>
+                    <br><br>
+                    <button class="btn btn-primary" type="submit" onclick="
+                            var player = $('#inputPlayer');
+                            if(player.val() == '') {
+                                player.toggleClass('badInput', true);
+                            }
+                            if(player.hasClass('badInput')) {
+                                var dialog = $('#badid');
+                                dialog.find('.modal-body').text('Please recheck the steamID you entered.');
+                                dialog.find('.modal-title').text('Invalid SteamID');
+                                dialog.modal('toggle');
+                            } else {
+                                var name = $('#inputName');
+                                add_ban('{{ url_for("bans.add_ban") }}', {
+                                    'target_id': player.val(),
+                                    'name': name.val(),
+                                    'duration': $('#actualDuration').val(),
+                                    'server_id': $('#server').val()
+                                },
+                                $('#banList').find('tbody'));
+                                $('#addBan').modal('toggle');
+                            }">Add Object</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <h2>Bans</h2>
-        <table class="table">
+        <table class="table" id="banList">
             <thead>
                 <tr>
                     <td>Player</td>
@@ -21,5 +108,8 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% if current_user.has_permission("web.ban.add") %}
+            <button class="btn btn-primary" onclick="$('#addBan').modal('toggle')">Add Ban</button>
+        {% endif %}
     </div>
 {% endblock %}
