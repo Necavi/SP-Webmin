@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+{% block title %}Bans{% endblock %}
+{% block body %}
+    <div class="container">
+        <h2>Bans</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <td>Player</td>
+                    <td>Admin</td>
+                    <td>Ban Date</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ban in bans %}
+                    <tr>
+                        <td>{{ ban.target.name + " (" + ban.target.formattedSteamId + ")" }}</td>
+                        <td>{{ ban.admin.name + " (" + ban.admin.formattedSteamId + ")" }}</td>
+                        <td>{{ format_date(ban.date) }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

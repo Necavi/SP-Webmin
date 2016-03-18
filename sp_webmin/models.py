@@ -212,3 +212,10 @@ class Server(Base):
         servers = {-1: "All Servers"}
         servers.update({server.id: server.name for server in Server.query.all()})
         return servers
+
+    @staticmethod
+    def get(self, id):
+        if id == -1:
+            server = Server(id=-1, name="All Servers")
+        else:
+            server = Server.query.filter_by(id=id).first()

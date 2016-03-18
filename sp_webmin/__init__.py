@@ -9,6 +9,6 @@ def run(*args, **kwargs):
     from .config import load_config
     app.config.update(load_config())
     from . import models
-    db.create_all()
     from . import views
+    db.create_all()
     app.run(*args, **kwargs)
