@@ -12,9 +12,6 @@ from . import app, db
 from .config import load_config, write_config
 from .models import User, Permission, PermissionObject, Server, AnonymousUser
 
-from .plugins import bans
-from .jinja_context import pages
-
 oid = OpenID(app)
 _steam_id_re = re.compile("steamcommunity.com/openid/id/(.*?)$")
 login_manager = LoginManager(app)
@@ -22,9 +19,6 @@ login_manager = LoginManager(app)
 
 steam_url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}"
 login_manager.anonymous_user = AnonymousUser
-
-app.register_blueprint(bans.plugin)
-pages.extend(bans.pages)
 
 
 @app.route("/register")

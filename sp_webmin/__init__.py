@@ -10,5 +10,9 @@ def run(*args, **kwargs):
     app.config.update(load_config())
     from . import models
     from . import views
+    from .plugins import bans
+    from .jinja_context import pages
+    app.register_blueprint(bans.plugin)
+    pages.extend(bans.pages)
     db.create_all()
     app.run(*args, **kwargs)
