@@ -144,7 +144,7 @@ steam_id_cache = SimpleCache()
 
 
 def _check_steam_id(steam_id):
-    if not steam_id.isdigit() or len(steam_id) != 17:
+    if not steam_id.isdigit() or 15 > len(steam_id) > 20:
         return False, None
     player = steam_id_cache.get(steam_id)
     if player is None:
@@ -155,7 +155,10 @@ def _check_steam_id(steam_id):
             player = {"name": players[0]["personaname"]}
             steam_id_cache.set(steam_id, player)
         else:
+            steam_id_cache.set(steam_id, False)
             return False, None
+    if not player:
+        return False, None
     return True, player
 
 
