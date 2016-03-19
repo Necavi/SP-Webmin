@@ -4,6 +4,8 @@ from . import app
 
 pages = [("Home", "index"), ("List Players", "player_list"), ("Settings", "settings")]
 
+my_pages = [("Profile", "my_profile")]
+
 
 def format_date(date):
     local_date = date + timedelta(hours=int(app.config.get("TIME_OFFSET", 0)))
@@ -37,6 +39,7 @@ def td_format(td_object):
 def context():
     return {
         "pages": pages,
+        "my_pages": my_pages,
         "format_date": format_date,
         "format_duration": td_format,
         "timedelta": timedelta,

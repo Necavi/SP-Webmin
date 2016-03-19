@@ -169,3 +169,8 @@ def check_steam_id():
         return json.dumps({
             "result": False
         })
+
+
+@app.route("/profile")
+def my_profile():
+    return render_template("layout.html")

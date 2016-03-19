@@ -34,25 +34,34 @@
                         {% endfor %}
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
-                        <li><span class="navbar-text">{{ current_user.username }}</span></li>
-                        <li>
-                            <div class="navbar-brand navbar-image">
-                                {% if current_user.is_authenticated %}
-                                    <img class="avatar-small" src="{{ current_user.avatarUrl }}">
-                                {% endif %}
-                            </div>
-                        </li>
-                        <li>
-                            {% if current_user.is_authenticated %}
+                        {% if current_user.is_authenticated %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                                    aria-expanded="false">My<span class="caret"></span></a>
+                                <ul class="dropdown-menu">
+                                    {% for name, endpoint in my_pages %}
+                                        <li><a href="{{ url_for(endpoint) }}">{{ name }}</a></li>
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                            <li><span class="navbar-text">{{ current_user.username }}</span></li>
+                            <li>
+                                <div class="navbar-brand navbar-image">
+                                        <img class="avatar-small" src="{{ current_user.avatarUrl }}">
+                                </div>
+                            </li>
+                            <li>
                                 <form action="{{ url_for("logout") }}" method="post">
                                     <button class="navbar-btn btn btn-primary btn-block" type="submit">Log Out</button>
                                 </form>
-                            {% else %}
+                            </li>
+                        {% else %}
+                            <li>
                                 <form action="{{ url_for("register_start") }}">
                                     <input type="image" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png">
                                 </form>
-                            {% endif %}
-                        </li>
+                            </li>
+                        {% endif %}
                     </ul>
                 </div><!--/.nav-collapse -->
             </div>
