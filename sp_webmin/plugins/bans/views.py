@@ -9,7 +9,6 @@ from .models import BanRecord
 
 from sp_webmin import db, app
 from sp_webmin.models import Server
-from sp_webmin.jinja_context import format_date
 
 
 @plugin.route("/")
@@ -24,7 +23,5 @@ def add_ban():
     db.session.add(ban)
     db.session.commit()
     return json.dumps({
-        "target": "{} ({})".format(ban.target.name, ban.target.formattedSteamId),
-        "admin": "{} ({})".format(ban.admin.name, ban.admin.formattedSteamId),
-        "date": format_date(ban.date)
+        "row": render_template("bans/list_row.html", ban=ban)
     })

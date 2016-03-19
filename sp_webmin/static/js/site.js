@@ -20,12 +20,8 @@ function add_object(url, identifier, type, selector) {
 }
 function add_ban(url, data, selector) {
     $.post(url, data, function(data) {
-        var tr = $("<tr>" +
-            "<td>" + data["target"] + "</td>" +
-            "<td>" + data["admin"] + "</td>" +
-            "<td>" + data["date"] + "</td>" +
-            "</tr>");
-        selector.append(tr);
+        console.log(data);
+        selector.append($(data["row"]));
     }, "json");
     return false;
 }

@@ -1,0 +1,32 @@
+<a data-toggle="collapse" data-target="#ban_{{ ban.id }}">
+    <div class="ban-list-group list-group-item">
+        <div class="ban-list-item40">
+            {{ ban.target.name + " (" + ban.target.formattedSteamId + ")" }}
+        </div>
+        <div class="ban-list-item40">
+            {{ ban.admin.name + " (" + ban.admin.formattedSteamId + ")" }}
+        </div>
+        <div class="ban-list-item20">
+            {{ format_date(ban.date) }}
+        </div>
+    </div>
+</a>
+<div class="collapse list-group-submenu" id="ban_{{ ban.id }}">
+    <div class="ban-list-detail list-group-item">
+        Target: {{ ban.target.name }}<br>
+        Admin: {{ ban.admin.name }}<br>
+        Date: {{ format_date(ban.date) }}<br>
+        {% if ban.duration != 0 %}
+            Duration: {{ format_duration(timedelta(seconds=ban.duration)) }}<br>
+            {% set remaining = ban.date - datetime.utcnow() + timedelta(seconds=ban.duration) %}
+            Remaining:
+            {% if remaining.total_seconds() > 0 %}
+                {{ format_duration(remaining | abs) }}
+            {% else %}
+                Expired
+            {% endif %}
+        {% else %}
+            Duration: Permanent
+        {% endif %}
+    </div>
+</div>

@@ -5,7 +5,7 @@ form {
   border: 4px;
 }
 .list-group-submenu {
-  margin-left:20px;
+  margin-left: 20px;
 }
 .list-group-item {
     cursor: pointer;
@@ -44,4 +44,48 @@ a:hover {
 .modal-center {
     vertical-align: middle;
     margin: 0 auto;
+}
+.ban-list-item40 {
+    width: 40%;
+    float: left;
+}
+.ban-list-item20 {
+    width: 20%;
+    float: left;
+}
+.ban-list-header {
+    border: 1px solid lightgray;
+    padding-left: 10px;
+    border-radius: 4px;
+    font-size: 18px;
+    -webkit-box-shadow: 0 0 5px 0 rgba(0,0,63,0.75);
+    -moz-box-shadow: 0 0 5px 0 rgba(0,0,63,0.75);
+    box-shadow: 0 0 3px 0 rgba(0,0,63,0.75);
+    margin-bottom: 10px;
+}
+.ban-list-header:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+#banList:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+.ban-list-group {
+    margin: 0;
+}
+.ban-list-group:after {
+    clear: both;
+    content: "";
+    display: table;
+}
+#banList {
+    padding-bottom: 10px;
+}
+.ban-list-detail {
+    width: 35%;
+    cursor: default;
+    background-color: rgba(0, 0, 0, 0.05);
 }

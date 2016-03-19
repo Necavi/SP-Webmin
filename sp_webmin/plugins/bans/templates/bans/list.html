@@ -78,7 +78,7 @@
                                     'duration': $('#actualDuration').val(),
                                     'server_id': $('#server').val()
                                 },
-                                $('#banList').find('tbody'));
+                                $('#banList'));
                                 $('#addBan').modal('toggle');
                             }">Add Object</button>
                 </div>
@@ -90,24 +90,22 @@
     </div>
     <div class="container">
         <h2>Bans</h2>
-        <table class="table" id="banList">
-            <thead>
-                <tr>
-                    <td>Player</td>
-                    <td>Admin</td>
-                    <td>Ban Date</td>
-                </tr>
-            </thead>
-            <tbody>
-                {% for ban in bans %}
-                    <tr>
-                        <td>{{ ban.target.name + " (" + ban.target.formattedSteamId + ")" }}</td>
-                        <td>{{ ban.admin.name + " (" + ban.admin.formattedSteamId + ")" }}</td>
-                        <td>{{ format_date(ban.date) }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="ban-list-header">
+            <div class="ban-list-item40">
+                Player
+            </div>
+            <div class="ban-list-item40">
+                Admin
+            </div>
+            <div class="ban-list-item20">
+                Date
+            </div>
+        </div>
+        <div id="banList">
+            {% for ban in bans %}
+                {% include "bans/list_row.html" %}
+            {% endfor %}
+        </div>
         {% if current_user.has_permission("web.ban.add") %}
             <button class="btn btn-primary" onclick="$('#addBan').modal('toggle')">Add Ban</button>
         {% endif %}
