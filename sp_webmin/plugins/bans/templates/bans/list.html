@@ -72,7 +72,7 @@
                                 dialog.modal('toggle');
                             } else {
                                 var name = $('#inputName');
-                                add_ban('{{ url_for("bans.add_ban") }}', {
+                                post_data('{{ url_for("bans.add_ban") }}', {
                                     'target_id': player.val(),
                                     'name': name.val(),
                                     'duration': $('#actualDuration').val(),

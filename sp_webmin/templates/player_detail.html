@@ -37,8 +37,8 @@
                 <div class="modal-body">
                     <label for="server_name">Server Name</label>
                     <input type="text" id="server_name" name="server_name">
-                    <button type="submit" onclick="add_server('{{ url_for("add_server") }}',
-                            $('#server_name').val(), $('#server'))" data-dismiss="modal">Add Server</button>
+                    <button type="submit" onclick="post_data('{{ url_for("add_server") }}',
+                            {'name': $('#server_name').val()}, $('#server'))" data-dismiss="modal">Add Server</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -77,13 +77,16 @@
                 <label for="node">Node:</label>
                 <input name="node" id="node" type="text">
                 <label for="server">Server:</label>
-                <select name="server" id="server" onchange="if (this.selectedIndex == 0) $('#addServer').modal('toggle')">
+                <select name="server" id="server" autocomplete="off"
+                        onchange="if (this.selectedIndex == 0) $('#addServer').modal('toggle')">
                     <option>Add new</option>
                     <option disabled>──────────</option>
                     {% set first = true %}
                     {% for server_id, server_name in servers | dictsort %}
-                        <option value="{{ server_id }}" {% if first %}selected{% set first = false %}{% endif %}>
-                            {{ server_name }} ({{ server_id }})</option>
+                        {% include "server_row.html" %}
+                        {% if first %}
+                            {% set first = false %}
+                        {% endif %}
                     {% endfor %}
                 </select>
                 <button class="btn btn-primary">Add permission node</button>

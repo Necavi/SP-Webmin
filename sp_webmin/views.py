@@ -77,7 +77,7 @@ def player_detail(identifier):
         PermissionObject.get(identifier).permissions.append(perm)
         db.session.commit()
         return redirect(url_for("player_detail", identifier=identifier))
-    return render_template("object_detail.html", obj=obj, servers=Server.list_servers(), type=type)
+    return render_template("player_detail.html", obj=obj, servers=Server.list_servers(), type=type)
 
 
 @app.route("/remove_object_permission", methods=["POST"])
@@ -104,8 +104,7 @@ def add_server():
     except:
         server = Server.query.filter_by(name=name).first()
     return json.dumps({
-        "id": server.id,
-        "name": server.name
+        "row": render_template("server_row.html", server_id=server.id, server_name=server.name)
     })
 
 

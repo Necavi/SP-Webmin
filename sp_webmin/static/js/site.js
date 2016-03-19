@@ -1,13 +1,3 @@
-function add_server(url, name, selector) {
-    $.post(url, {name: name}, function(data) {
-        selector
-         .append($("<option/>")
-         .val(data["id"])
-         .text(data["name"] + " (" + data["id"] + ")"));
-    }, "json");
-    return false;
-}
-
 function add_object(url, identifier, type, selector) {
     $.post(url, {identifier: identifier, type: type}, function(data) {
         var tr = $("<tr>" +
@@ -18,7 +8,7 @@ function add_object(url, identifier, type, selector) {
     }, "json");
     return false;
 }
-function add_ban(url, data, selector) {
+function post_data(url, data, selector) {
     $.post(url, data, function(data) {
         console.log(data);
         selector.append($(data["row"]));
@@ -29,8 +19,10 @@ function insertNewSettingsRow() {
     $("<tr><td><input type=\"text\" class=\"input-sm\" autocomplete=\"off\"\
            onkeyup=\"$(this).parent().parent().find('.settingValue').\
            attr('name', $(this).val())\"></td>\
-<td><input type=\"text\" class=\"input-sm settingValue\" autocomplete=\"off\"\
-           size=\"128\" maxlength=\"128\"></td></tr>").insertBefore("#end");
+            <td><input type=\"text\" class=\"input-sm settingValue\" autocomplete=\"off\"\
+           size=\"128\" maxlength=\"128\"></td>\
+            <td><button class=\"btn btn-primary btn-sm\"\
+                        onclick=\"$(this).parent().parent().remove()\">Remove</button></td></tr>").insertBefore("#end");
 }
 function checkSteamID(url, steamID, finish) {
     return $.get(url, {steamID: steamID}, function(data) {
