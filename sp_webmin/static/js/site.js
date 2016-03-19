@@ -1,13 +1,3 @@
-function add_object(url, identifier, type, selector) {
-    $.post(url, {identifier: identifier, type: type}, function(data) {
-        var tr = $("<tr>" +
-            "<td><a href='" + data["url"] + "'>" + data["name"] + "</a></td>" +
-            "<td><a href='" + data["steamUrl"] + "'>" +
-            data["identifier"] + "</a></td></tr>");
-        selector.append(tr);
-    }, "json");
-    return false;
-}
 function post_data(url, data, selector) {
     $.post(url, data, function(data) {
         console.log(data);

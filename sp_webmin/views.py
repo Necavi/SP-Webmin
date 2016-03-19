@@ -118,11 +118,7 @@ def add_object():
     except:
         obj = PermissionObject.query.filter_by(identifier=identifier).first()
     return json.dumps({
-        "identifier": obj.identifier,
-        "name": obj.name,
-        "type": obj.type,
-        "url": url_for("player_detail", identifier=obj.identifier),
-        "steamUrl": obj.steamUrl
+        "row": render_template("player_list_row.html", obj=obj)
     })
 
 

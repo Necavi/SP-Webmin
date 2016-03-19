@@ -16,8 +16,10 @@
                         <option value="Player">Player</option>
                         <option value="Group">Group</option>
                     </select><br>
-                    <button type="submit" onclick="add_object('{{ url_for("add_object") }}',
-                            $('#identifier').val(), $('#type').val(), $('#objectList').find('tbody'))" data-dismiss="modal">Add Object</button>
+                    <button type="submit" onclick="post_data('{{ url_for("add_object") }}',
+                            {identifier: $('#identifier').val(), type: $('#type').val()},
+                            $('#objectList').find('tbody'))"
+                            data-dismiss="modal">Add Object</button>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
@@ -36,10 +38,7 @@
             </thead>
             <tbody>
                 {% for obj in objects %}
-                    <tr>
-                        <td><a href="{{ url_for("player_detail", identifier=obj.identifier) }}">{{ obj.name }}</a></td>
-                        <td><a href="{{ obj.steamUrl }}">{{ obj.formattedSteamId }}</a></td>
-                    </tr>
+                    {% include "player_list_row.html" %}
                 {% endfor %}
             </tbody>
         </table>
