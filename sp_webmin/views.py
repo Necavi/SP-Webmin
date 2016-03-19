@@ -2,11 +2,11 @@ import re
 import json
 import requests
 
-from datetime import timedelta
-
 from flask import session, redirect, url_for, render_template, request
 from flask.ext.openid import OpenID, COMMON_PROVIDERS
 from flask.ext.login import LoginManager, current_user, login_user, logout_user
+
+from werkzeug.contrib.cache import SimpleCache
 
 from . import app, db
 from .config import load_config, write_config
@@ -19,6 +19,13 @@ login_manager = LoginManager(app)
 
 steam_url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}"
 login_manager.anonymous_user = AnonymousUser
+
+
+def int_try_parse(value):
+    try:
+        return int(value), True
+    except ValueError:
+        return value, False
 
 
 @app.route("/register")
@@ -133,13 +140,34 @@ def update_settings():
     return redirect(url_for("settings"))
 
 
+steam_id_cache = SimpleCache()
+
+
+def _check_steam_id(steam_id):
+    if not steam_id.isdigit() or len(steam_id) != 17:
+        return False, None
+    player = steam_id_cache.get(steam_id)
+    if player is None:
+        url = steam_url.format(app.config["STEAM_API_KEY"], steam_id)
+        steam_user = requests.get(url).json()
+        players = steam_user["response"]["players"]
+        if len(players) > 0:
+            player = {"name": players[0]["personaname"]}
+            steam_id_cache.set(steam_id, player)
+        else:
+            return False, None
+    return True, player
+
+
 @app.route("/check_steam_id")
 def check_steam_id():
-    if "steamID" not in request.args:
-        return json.dumps({"result": False})
-    url = steam_url.format(app.config["STEAM_API_KEY"], request.args["steamID"])
-    steam_user = requests.get(url).json()
-    if len(steam_user["response"]["players"]) > 0:
-        return json.dumps({"result": True, "player": {"name": steam_user["response"]["players"][0]["personaname"]}})
+    result, player = _check_steam_id(request.args.get("steamID", ""))
+    if result:
+        return json.dumps({
+            "result": True,
+            "player": player
+        })
     else:
-        return json.dumps({"result": False})
+        return json.dumps({
+            "result": False
+        })
