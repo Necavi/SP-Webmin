@@ -23,7 +23,10 @@ parents_table = Table(
 
 
 class PermissionSet(set):
-    permissions_cache = set()
+
+    def __init__(self):
+        super().__init__()
+        self.permissions_cache = set()
 
     @staticmethod
     def _compile_permission(permission):
@@ -36,10 +39,11 @@ class PermissionSet(set):
 
     def add(self, perm):
         self.permissions_cache.add(self._compile_permission(perm))
+        super().add(perm)
 
     def remove(self, perm):
-        super().remove(perm)
         self.permissions_cache.remove(self._compile_permission(perm))
+        super().remove(perm)
 
     def has(self, perm):
         for node in self.permissions_cache:
@@ -50,7 +54,9 @@ class PermissionSet(set):
 
 class PermissionBase(object):
     username = "Base"
-    permissions = PermissionSet()
+
+    def __init__(self):
+        self.permissions = PermissionSet()
 
     def has_permission(self, permission):
         return self.permissions.has(permission)
@@ -60,6 +66,7 @@ class AnonymousUser(PermissionBase, AnonymousUserMixin):
     username = "Anonymous"
 
     def __init__(self):
+        super().__init__()
         guest_group = PermissionObject.query.filter_by(identifier=app.config.get("GUEST_GROUP", "guest")).first()
         if guest_group is None:
             return
@@ -75,6 +82,7 @@ class User(PermissionBase, Base, UserMixin):
     avatarUrl = ""
 
     def __init__(self, steamid):
+        super().__init__()
         self.steamid = steamid
 
     @staticmethod
@@ -99,7 +107,7 @@ class User(PermissionBase, Base, UserMixin):
         return self.steamid
 
     def __repr__(self):
-        return "User: {}:{}:{}".format(self.name, self.email, self.steamid)
+        return "User: {}:{}:{}".format(self.username, self.email, self.steamid)
 
 
 class Permission(Base):

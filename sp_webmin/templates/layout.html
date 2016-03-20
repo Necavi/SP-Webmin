@@ -36,29 +36,32 @@
                     <ul class="nav navbar-nav navbar-right">
                         {% if current_user.is_authenticated %}
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                                    aria-expanded="false">My<span class="caret"></span></a>
-                                <ul class="dropdown-menu">
+                                <a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown" role="button" aria-haspopup="true"
+                                    aria-expanded="false">{{ current_user.username }} <span class="caret"></span></a>
+                                <ul class="dropdown-menu user-menu">
                                     {% for name, endpoint in my_pages %}
                                         <li><a href="{{ url_for(endpoint) }}">{{ name }}</a></li>
                                     {% endfor %}
+                                    <li role="separator" class="divider"></li>
+                                    <li>
+                                        <a>
+                                            <form action="{{ url_for("logout") }}" method="post">
+                                                <div onclick="$(this).parent().submit(); return false;">Submit</div>
+                                            </form>
+                                        </a>
+                                    </li>
                                 </ul>
                             </li>
-                            <li><span class="navbar-text">{{ current_user.username }}</span></li>
                             <li>
                                 <div class="navbar-brand navbar-image">
                                         <img class="avatar-small" src="{{ current_user.avatarUrl }}">
                                 </div>
                             </li>
-                            <li>
-                                <form action="{{ url_for("logout") }}" method="post">
-                                    <button class="navbar-btn btn btn-primary btn-block" type="submit">Log Out</button>
-                                </form>
-                            </li>
                         {% else %}
                             <li>
                                 <form action="{{ url_for("register_start") }}">
-                                    <input type="image" src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png">
+                                    <input type="image" class="login-icon"
+                                           src="http://steamcommunity-a.akamaihd.net/public/images/signinthroughsteam/sits_large_noborder.png">
                                 </form>
                             </li>
                         {% endif %}

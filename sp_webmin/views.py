@@ -45,6 +45,7 @@ def logout():
 def create_or_login(resp):
     match = _steam_id_re.search(resp.identity_url)
     session["steamid"] = match.group(1)
+    print(session)
     login_user(User.get(session["steamid"]))
     return redirect(oid.get_next_url())
 
