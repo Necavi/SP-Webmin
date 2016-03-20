@@ -99,3 +99,9 @@ a:hover {
 .dropdown-menu > li > a:hover {
     cursor: pointer;
 }
+textarea {
+    resize: none;
+}
+.align-top {
+    vertical-align: top;
+}

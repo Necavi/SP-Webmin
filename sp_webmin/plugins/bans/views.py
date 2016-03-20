@@ -22,7 +22,7 @@ def index():
 @plugin.route("/add", methods=["POST"])
 def add_ban():
     ban = BanRecord(name=request.form["name"], duration=request.form["duration"], server_id=request.form["server_id"],
-                    target_id=request.form["target_id"], admin_id=current_user.steamid)
+                    target_id=request.form["target_id"], admin_id=current_user.steamid, reason=request.form["reason"])
     db.session.add(ban)
     db.session.commit()
     return json.dumps({

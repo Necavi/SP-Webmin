@@ -28,5 +28,9 @@
         {% else %}
             Duration: Permanent
         {% endif %}
+        <br>
+        {% if ban.reason is not none %}
+            Reason: {{ ban.reason }}
+        {% endif %}
     </div>
 </div>

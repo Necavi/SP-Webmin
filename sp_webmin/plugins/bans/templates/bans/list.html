@@ -52,6 +52,10 @@
                     </select>
                     <input id="actualDuration" hidden="hidden" value="0" autocomplete="off">
                     <br>
+                    <div>
+                        <label class="align-top" for="inputReason">Reason: </label>
+                        <textarea id="inputReason" rows="4" cols="50"></textarea>
+                    </div>
                     <label for="server">Server:</label>
                     <select name="server" id="server">
                         {% for server_id, server_name in servers | dictsort %}
@@ -76,7 +80,8 @@
                                     'target_id': player.val(),
                                     'name': name.val(),
                                     'duration': $('#actualDuration').val(),
-                                    'server_id': $('#server').val()
+                                    'server_id': $('#server').val(),
+                                    'reason': $('#inputReason').val()
                                 },
                                 $('#banList'));
                                 $('#addBan').modal('toggle');
