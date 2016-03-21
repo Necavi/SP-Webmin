@@ -1,5 +1,5 @@
 {% extends "layout.html" %}
-{% block title %}Player List{% endblock %}
+{% block title %}Players{% endblock %}
 {% block body %}
     {% if current_user.has_permission("web.object.add") %}
         <div class="modal fade" id="addObject" role="dialog">
@@ -30,7 +30,7 @@
         </div>
     {% endif %}
     <div class="container">
-        <h1>Player List</h1>
+        <h1>Players</h1>
         <table class="table" id="objectList">
             <thead>
                 <tr>

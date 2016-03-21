@@ -14,29 +14,35 @@
                 </thead>
                 <tbody>
                     {% for key, value in config|dictsort %}
-                        {% if key != "STEAM_API_KEY" %}
+                        {% if key not in ("STEAM_API_KEY", "SQLALCHEMY_DATABASE_URI") %}
                             <tr>
                                 <td><label for="{{ key }}">{{ key|replace("_", " ")|title }}</label></td>
                                 <td><input type="text" class="input-sm" size="128" maxlength="128" id="{{ key }}"
                                            name="{{ key }}" value="{{ value }}"></td>
-                                <td><button class="btn btn-primary btn-sm" onclick="$(this).parent().parent().remove()">Remove</button></td>
+                                {% if current_user.has_permission("web.settings.update") %}
+                                    <td><button class="btn btn-primary btn-sm"
+                                                onclick="$(this).parent().parent().remove()">Remove</button></td>
+                                {% endif %}
                             </tr>
                         {% endif %}
                     {% endfor %}
-                    <tr>
-                        <td><input type="text" class="input-sm" autocomplete="off"
-                                   onkeyup="$(this).parent().parent().find('.settingValue').
-                                   attr('name', $(this).val())"></td>
-                        <td><input type="text" class="input-sm settingValue" autocomplete="off"
-                                   size="128" maxlength="128"></td>
-                        <td><button class="btn btn-primary btn-sm"
-                                    onclick="$(this).parent().parent().remove()">Remove</button></td>
-                    </tr>
-                    <tr id="end">
-                        <td><button class="btn btn-primary" type="submit">Submit Changes</button></td>
-                        <td></td>
-                        <td><button class="btn btn-primary" type="button" onclick="insertNewSettingsRow()">Add New Value</button></td>
-                    </tr>
+                    {% if current_user.has_permission("web.settings.update") %}
+                        <tr>
+                            <td><input type="text" class="input-sm" autocomplete="off"
+                                       onkeyup="$(this).parent().parent().find('.settingValue').
+                                       attr('name', $(this).val())"></td>
+                            <td><input type="text" class="input-sm settingValue" autocomplete="off"
+                                       size="128" maxlength="128"></td>
+                            <td><button class="btn btn-primary btn-sm"
+                                        onclick="$(this).parent().parent().remove()">Remove</button></td>
+                        </tr>
+                        <tr id="end">
+                            <td><button class="btn btn-primary" type="submit">Submit Changes</button></td>
+                            <td></td>
+                            <td><button class="btn btn-primary" type="button"
+                                        onclick="insertNewSettingsRow()">Add New Value</button></td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </form>

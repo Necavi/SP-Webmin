@@ -160,9 +160,9 @@ class PermissionObject(Base):
             steam_id = id.SteamID.from_community_url("http://steamcommunity.com/profiles/" +
                                                      str(self.identifier))
             steamid_format = app.config.get("STEAMID_FORMAT", "")
-            if steamid_format == "Steam3":
+            if steamid_format.casefold() == "Steam3".casefold():
                 self.formattedSteamId = steam_id.as_32()
-            elif steamid_format == "Steam2":
+            elif steamid_format.casefold() == "Steam2".casefold():
                 self.formattedSteamId = str(steam_id)
 
     @staticmethod
