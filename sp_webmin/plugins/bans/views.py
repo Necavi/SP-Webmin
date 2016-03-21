@@ -13,15 +13,18 @@ from .models import BanRecord
 
 from sp_webmin import db, app
 from sp_webmin.models import Server
+from sp_webmin.utilities import permission_required
 
 
 @plugin.route("/")
+@permission_required("web.pages.ban.index")
 def index():
     return render_template("bans/list.html", bans=BanRecord.query.order_by(desc(BanRecord.start_date)).all(),
                            servers=Server.list_servers())
 
 
 @plugin.route("/add", methods=["POST"])
+@permission_required("web.ban.add")
 def add_ban():
     ban = BanRecord(name=request.form["name"], duration=request.form["duration"], server_id=request.form["server_id"],
                     target_id=request.form["target_id"], admin_id=current_user.steamid, reason=request.form["reason"])
@@ -33,6 +36,7 @@ def add_ban():
 
 
 @plugin.route("/remove", methods=["POST"])
+@permission_required("web.ban.remove")
 def remove_ban():
     ban_id = request.form.get("ban_id")
     ban = BanRecord.query.filter_by(id=ban_id).first()
@@ -46,5 +50,5 @@ def remove_ban():
 @plugin.route("/my")
 def my_bans():
     return render_template("bans/list.html", bans=BanRecord.query.filter_by(target_id=current_user.steamid).
-                           order_by(desc(BanRecord.date)).all(),
+                           order_by(desc(BanRecord.start_date)).all(),
                            servers=Server.list_servers())

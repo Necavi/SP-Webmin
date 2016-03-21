@@ -15,6 +15,7 @@
     <div class="ban-list-detail list-group-item">
         Target: {{ ban.target.name }}<br>
         Admin: {{ ban.admin.name }}<br>
+        Server: {{ servers[ban.server_id] }}<br>
         Start Date: {{ format_date(ban.start_date) }}<br>
         <span id="stop-date-{{ ban.id }}">
             {% if ban.stop_date is not none %}
@@ -38,14 +39,16 @@
             Reason: {{ ban.reason }}
         <br>
         {% endif %}
-        {% if remaining.total_seconds() > 0 and ban.stop_date is none %}
-            <button class="btn btn-primary btn-sm" id="remove-button-{{ ban.id }}"
-                    onclick="$.post('{{ url_for("bans.remove_ban") }}',
-                    { 'ban_id': {{ ban.id }} }, function(data) { console.log(data); $('#remove-button-{{ ban.id }}').remove();
-                    $('#stop-date-{{ ban.id }}').text(data['date']).append('<br>');
-                    }, 'json'); ">
-                Remove
-            </button>
+        {% if current_user.has_permission("web.bans.remove") %}
+            {% if remaining.total_seconds() > 0 and ban.stop_date is none %}
+                <button class="btn btn-primary btn-sm" id="remove-button-{{ ban.id }}"
+                        onclick="$.post('{{ url_for("bans.remove_ban") }}',
+                        { 'ban_id': {{ ban.id }} }, function(data) { console.log(data); $('#remove-button-{{ ban.id }}').remove();
+                        $('#stop-date-{{ ban.id }}').text(data['date']).append('<br>');
+                        }, 'json'); ">
+                    Remove
+                </button>
+            {% endif %}
         {% endif %}
     </div>
 </div>

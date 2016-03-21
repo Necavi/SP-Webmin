@@ -27,25 +27,27 @@
 {% endmacro %}s
 {% block title %}{{ obj.name }}{% endblock %}
 {% block body %}
-    <div class="modal fade" id="addServer" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h4 class="modal-title">Add a new server</h4>
-                </div>
-                <div class="modal-body">
-                    <label for="server_name">Server Name</label>
-                    <input type="text" id="server_name" name="server_name">
-                    <button type="submit" onclick="post_data('{{ url_for("add_server") }}',
-                            {'name': $('#server_name').val()}, $('#server'))" data-dismiss="modal">Add Server</button>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+    {% if current_user.has_permission("web.server.add") %}
+        <div class="modal fade" id="addServer" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        <h4 class="modal-title">Add a new server</h4>
+                    </div>
+                    <div class="modal-body">
+                        <label for="server_name">Server Name</label>
+                        <input type="text" id="server_name" name="server_name">
+                        <button type="submit" onclick="post_data('{{ url_for("add_server") }}',
+                                {'name': $('#server_name').val()}, $('#server'))" data-dismiss="modal">Add Server</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    {% endif %}
     <div class="container">
         <h2>
             {% if obj.type == "Player" %}
@@ -78,9 +80,13 @@
                 <input name="node" id="node" type="text">
                 <label for="server">Server:</label>
                 <select name="server" id="server" autocomplete="off"
-                        onchange="if (this.selectedIndex == 0) $('#addServer').modal('toggle')">
-                    <option>Add new</option>
-                    <option disabled>──────────</option>
+                        {% if current_user.has_permission("web.server.add") %}
+                                onchange="if (this.selectedIndex == 0) $('#addServer').modal('toggle')">
+                            <option>Add new</option>
+                            <option disabled>──────────</option>
+                        {% else %}
+                            >
+                        {% endif %}
                     {% set first = true %}
                     {% for server_id, server_name in servers | dictsort %}
                         {% include "server_row.html" %}

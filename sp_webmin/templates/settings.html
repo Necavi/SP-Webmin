@@ -14,12 +14,14 @@
                 </thead>
                 <tbody>
                     {% for key, value in config|dictsort %}
-                        <tr>
-                            <td><label for="{{ key }}">{{ key|replace("_", " ")|title }}</label></td>
-                            <td><input type="text" class="input-sm" size="128" maxlength="128" id="{{ key }}"
-                                       name="{{ key }}" value="{{ value }}"></td>
-                            <td><button class="btn btn-primary btn-sm" onclick="$(this).parent().parent().remove()">Remove</button></td>
-                        </tr>
+                        {% if key != "STEAM_API_KEY" %}
+                            <tr>
+                                <td><label for="{{ key }}">{{ key|replace("_", " ")|title }}</label></td>
+                                <td><input type="text" class="input-sm" size="128" maxlength="128" id="{{ key }}"
+                                           name="{{ key }}" value="{{ value }}"></td>
+                                <td><button class="btn btn-primary btn-sm" onclick="$(this).parent().parent().remove()">Remove</button></td>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                     <tr>
                         <td><input type="text" class="input-sm" autocomplete="off"

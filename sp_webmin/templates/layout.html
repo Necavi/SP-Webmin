@@ -17,7 +17,8 @@
         <nav class="navbar navbar-default navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                            aria-expanded="false" aria-controls="navbar">
                         <span class="sr-only">Toggle navigation</span>
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
@@ -36,7 +37,8 @@
                     <ul class="nav navbar-nav navbar-right">
                         {% if current_user.is_authenticated %}
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown" role="button" aria-haspopup="true"
+                                <a href="#" class="dropdown-toggle user-menu" data-toggle="dropdown" role="button"
+                                   aria-haspopup="true"
                                     aria-expanded="false">{{ current_user.username }} <span class="caret"></span></a>
                                 <ul class="dropdown-menu user-menu">
                                     {% for name, endpoint in my_pages %}
@@ -46,7 +48,7 @@
                                     <li>
                                         <a>
                                             <form action="{{ url_for("logout") }}" method="post">
-                                                <div onclick="$(this).parent().submit(); return false;">Submit</div>
+                                                <div onclick="$(this).parent().submit(); return false;">Logout</div>
                                             </form>
                                         </a>
                                     </li>

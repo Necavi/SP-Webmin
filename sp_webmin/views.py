@@ -4,13 +4,14 @@ import requests
 
 from flask import session, redirect, url_for, render_template, request
 from flask.ext.openid import OpenID, COMMON_PROVIDERS
-from flask.ext.login import LoginManager, current_user, login_user, logout_user
+from flask.ext.login import LoginManager, login_user, logout_user
 
 from werkzeug.contrib.cache import SimpleCache
 
 from . import app, db
 from .config import load_config, write_config
 from .models import User, Permission, PermissionObject, Server, AnonymousUser
+from .utilities import permission_required, permissions
 
 oid = OpenID(app)
 _steam_id_re = re.compile("steamcommunity.com/openid/id/(.*?)$")
@@ -45,7 +46,6 @@ def logout():
 def create_or_login(resp):
     match = _steam_id_re.search(resp.identity_url)
     session["steamid"] = match.group(1)
-    print(session)
     login_user(User.get(session["steamid"]))
     return redirect(oid.get_next_url())
 
@@ -56,32 +56,26 @@ def load_user(user_id):
 
 
 @app.route("/")
+@permission_required("web.pages.index")
 def index():
     return render_template("layout.html")
 
 
-@app.route("/player_list", methods=["GET", "POST"])
+@app.route("/player_list")
+@permission_required("web.pages.player_list")
 def player_list():
-    if request.method == "POST":
-        obj = PermissionObject(type=request.form["type"], identifier=request.form["identifier"])
-        db.session.add(obj)
-        db.session.commit()
-        return redirect(url_for("player_list"))
     return render_template("player_list.html", objects=PermissionObject.query.all())
 
 
-@app.route("/player_detail/<identifier>", methods=["GET", "POST"])
+@app.route("/player_detail/<identifier>")
+@permission_required("web.pages.player_detail")
 def player_detail(identifier):
     obj = PermissionObject.get(identifier)
-    if request.method == "POST":
-        perm = Permission(object_id=obj.id, node=request.form["node"], server_id=request.form["server"])
-        PermissionObject.get(identifier).permissions.append(perm)
-        db.session.commit()
-        return redirect(url_for("player_detail", identifier=identifier))
     return render_template("player_detail.html", obj=obj, servers=Server.list_servers(), type=type)
 
 
 @app.route("/remove_object_permission", methods=["POST"])
+@permission_required("web.permission.remove")
 def remove_object_permission():
     obj = PermissionObject.get(request.form["identifier"])
     rem_perm = None
@@ -96,6 +90,7 @@ def remove_object_permission():
 
 
 @app.route("/add_server", methods=["POST"])
+@permission_required("web.server.add")
 def add_server():
     name = request.form["name"]
     try:
@@ -110,6 +105,7 @@ def add_server():
 
 
 @app.route("/add_object", methods=["POST"])
+@permission_required("web.object.add")
 def add_object():
     identifier = request.form["identifier"]
     try:
@@ -124,11 +120,13 @@ def add_object():
 
 
 @app.route("/settings")
+@permission_required("web.pages.settings")
 def settings():
     return render_template("settings.html", config=load_config())
 
 
 @app.route("/update_settings", methods=["POST"])
+@permission_required("web.settings.update")
 def update_settings():
     config = {key.upper().replace(" ", "_"): value for key, value in request.form.items()}
     write_config(config)
@@ -174,4 +172,9 @@ def check_steam_id():
 
 @app.route("/profile")
 def my_profile():
-    return render_template("layout.html")
+    return render_template("error.html")
+
+
+@app.route("/permissions")
+def view_permissions():
+    return render_template("permissions.html", permissions=permissions)

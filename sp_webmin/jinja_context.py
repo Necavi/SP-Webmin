@@ -2,7 +2,8 @@ from datetime import timedelta, datetime
 
 from . import app
 
-pages = [("Home", "index"), ("List Players", "player_list"), ("Settings", "settings")]
+pages = [("Home", "index"), ("Players", "player_list"), ("Settings", "settings"),
+         ("Permissions", "view_permissions")]
 
 my_pages = [("Profile", "my_profile")]
 
