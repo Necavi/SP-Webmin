@@ -129,6 +129,8 @@ def settings():
 @permission_required("web.settings.update")
 def update_settings():
     config = {key.upper().replace(" ", "_"): value for key, value in request.form.items()}
+    config["STEAM_API_KEY"] = app.config["STEAM_API_KEY"]
+    config["SQLALCHEMY_DATABASE_URI"] = app.config["SQLALCHEMY_DATABASE_URI"]
     write_config(config)
     app.config.update(config)
     return redirect(url_for("settings"))
