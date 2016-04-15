@@ -58,7 +58,7 @@ def load_user(user_id):
 @app.route("/")
 @permission_required("web.pages.index")
 def index():
-    return render_template("layout.html")
+    return render_template("index.html")
 
 
 @app.route("/player_list")
@@ -85,6 +85,17 @@ def remove_object_permission():
             break
     if rem_perm is not None:
         db.session.delete(rem_perm)
+        db.session.commit()
+    return redirect(url_for("player_detail", identifier=request.form["identifier"]))
+
+
+@app.route("/add_object_permission", methods=["POST"])
+@permission_required("web.permission.add")
+def add_object_permission():
+    obj = PermissionObject.get(request.form["identifier"])
+    if obj is not None:
+        perm = Permission(object_id=obj.identifier, server_id=request.form["server"], perm=request.form["node"])
+        obj.permissions.append(perm)
         db.session.commit()
     return redirect(url_for("player_detail", identifier=request.form["identifier"]))
 

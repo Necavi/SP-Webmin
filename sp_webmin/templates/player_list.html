@@ -29,23 +29,21 @@
             </div>
         </div>
     {% endif %}
-    <div class="container">
-        <h1>Players</h1>
-        <table class="table" id="objectList">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>SteamID</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for obj in objects %}
-                    {% include "player_list_row.html" %}
-                {% endfor %}
-            </tbody>
-        </table>
-        {% if current_user.has_permission("web.object.add") %}
-            <button class="btn btn-primary" onclick="$('#addObject').modal('toggle')">Add Player Or Group</button>
-        {% endif %}
-    </div>
+    <h1>Players</h1>
+    <table class="table" id="objectList">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>SteamID</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for obj in objects %}
+                {% include "player_list_row.html" %}
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if current_user.has_permission("web.object.add") %}
+        <button class="btn btn-primary" onclick="$('#addObject').modal('toggle')">Add Player Or Group</button>
+    {% endif %}
 {% endblock %}

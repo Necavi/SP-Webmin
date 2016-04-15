@@ -48,55 +48,55 @@
             </div>
         </div>
     {% endif %}
-    <div class="container">
-        <h2>
-            {% if obj.type == "Player" %}
-                <img class="avatar" src="{{ obj.avatarUrl }}">
-            {% endif %}
-            {{ obj.name + " (" + obj.formattedSteamId + ")" }}
-        </h2>
-        <div id="MainMenu">
-            {% set perms = {} %}
-            {{ obj.get_permission_heirarchy_by_server(perms) | default("", true) }}
-            {% for server_id, identifiers in perms | dictsort %}
-                <a data-toggle="collapse" data-target="#{{ "server" + server_id | string }}">
-                    <div class="list-group-item">
-                            {{ servers.get(server_id, "Unknown Server") }}
-                    </div>
-                </a>
-                <div class="collapse list-group-submenu" id="{{ "server" + server_id | string }}">
-                    {% if obj.identifier in identifiers %}
-                        {{ print_permissions(obj.identifier, obj.name + " (" + obj.formattedSteamId + ")", identifiers.pop(obj.identifier), server_id, true) }}
-                    {% endif %}
-                    {% for identifier, permissions in identifiers | dictsort %}
-                        {{ print_permissions(identifier, identifier, permissions, server_id) }}
-                    {% endfor %}
-                </div>
-            {% endfor %}
-        </div>
-        {% if current_user.has_permission("web.permission.add") %}
-            <form action="{{ url_for("player_detail", identifier=obj.identifier) }}" method="post">
-                <label for="node">Node:</label>
-                <input name="node" id="node" type="text">
-                <label for="server">Server:</label>
-                <select name="server" id="server" autocomplete="off"
-                        {% if current_user.has_permission("web.server.add") %}
-                                onchange="if (this.selectedIndex == 0) $('#addServer').modal('toggle')">
-                            <option>Add new</option>
-                            <option disabled>──────────</option>
-                        {% else %}
-                            >
-                        {% endif %}
-                    {% set first = true %}
-                    {% for server_id, server_name in servers | dictsort %}
-                        {% include "server_row.html" %}
-                        {% if first %}
-                            {% set first = false %}
-                        {% endif %}
-                    {% endfor %}
-                </select>
-                <button class="btn btn-primary">Add permission node</button>
-            </form>
+    <h2>
+        {% if obj.type == "Player" %}
+            <img class="avatar" src="{{ obj.avatarUrl }}">
         {% endif %}
+        {{ obj.name + " (" + obj.formattedSteamId + ")" }}
+    </h2>
+    <div id="MainMenu">
+        {% set perms = {} %}
+        {{ obj.get_permission_heirarchy_by_server(perms) | default("", true) }}
+        {% for server_id, identifiers in perms | dictsort %}
+            <a data-toggle="collapse" data-target="#{{ "server" + server_id | string }}">
+                <div class="list-group-item">
+                        {{ servers.get(server_id, "Unknown Server") }}
+                </div>
+            </a>
+            <div class="collapse list-group-submenu" id="{{ "server" + server_id | string }}">
+                {% if obj.identifier in identifiers %}
+                    {{ print_permissions(obj.identifier, obj.name + " (" + obj.formattedSteamId + ")",
+                    identifiers.pop(obj.identifier), server_id, true) }}
+                {% endif %}
+                {% for identifier, permissions in identifiers | dictsort %}
+                    {{ print_permissions(identifier, identifier, permissions, server_id) }}
+                {% endfor %}
+            </div>
+        {% endfor %}
     </div>
+    {% if current_user.has_permission("web.permission.add") %}
+        <form action="{{ url_for("player_detail", identifier=obj.identifier) }}" method="post">
+            <label for="node">Node:</label>
+            <input name="node" id="node" type="text">
+            <label for="server">Server:</label>
+            <select name="server" id="server" autocomplete="off"
+                    {% if current_user.has_permission("web.server.add") %}
+                            onchange="if (this.selectedIndex == 0) $('#addServer').modal('toggle')">
+                        <option>Add new</option>
+                        <option disabled>──────────</option>
+                    {% else %}
+                        >
+                    {% endif %}
+                {% set first = true %}
+                {% for server_id, server_name in servers | dictsort %}
+                    {% include "server_row.html" %}
+                    {% if first %}
+                        {% set first = false %}
+                    {% endif %}
+                {% endfor %}
+            </select>
+            <input hidden name="identifier" value="{{ obj.identifier }}">
+            <button class="btn btn-primary">Add permission node</button>
+        </form>
+    {% endif %}
 {% endblock %}

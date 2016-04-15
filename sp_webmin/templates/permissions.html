@@ -1,12 +1,10 @@
 {% extends "layout.html" %}
 {% block title %}Permissions{% endblock %}
 {% block body %}
-    <div class="container">
-        <h2>Available Permissions</h2>
-        <ul>
-            {% for permission in permissions | sort %}
-                <li>{{ permission }}</li>
-            {% endfor %}
-        </ul>
-    </div>
+    <h2>Available Permissions</h2>
+    <ul>
+        {% for permission in permissions | sort %}
+            <li>{{ permission }}</li>
+        {% endfor %}
+    </ul>
 {% endblock body %}

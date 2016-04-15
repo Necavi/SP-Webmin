@@ -95,26 +95,24 @@
             </div>
         </div>
     {% endif %}
-    <div class="container">
-        <h2>Bans</h2>
-        <div class="ban-list-header">
-            <div class="ban-list-item40">
-                Player
-            </div>
-            <div class="ban-list-item40">
-                Admin
-            </div>
-            <div class="ban-list-item20">
-                Date
-            </div>
+    <h2>Bans</h2>
+    <div class="ban-list-header">
+        <div class="ban-list-item40">
+            Player
         </div>
-        <div id="banList">
-            {% for ban in bans %}
-                {% include "bans/list_row.html" %}
-            {% endfor %}
+        <div class="ban-list-item40">
+            Admin
         </div>
-        {% if current_user.has_permission("web.ban.add") %}
-            <button class="btn btn-primary" onclick="$('#addBan').modal('toggle')">Add Ban</button>
-        {% endif %}
+        <div class="ban-list-item20">
+            Date
+        </div>
     </div>
+    <div id="banList">
+        {% for ban in bans %}
+            {% include "bans/list_row.html" %}
+        {% endfor %}
+    </div>
+    {% if current_user.has_permission("web.ban.add") %}
+        <button class="btn btn-primary" onclick="$('#addBan').modal('toggle')">Add Ban</button>
+    {% endif %}
 {% endblock %}
