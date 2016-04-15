@@ -158,7 +158,7 @@ def _check_steam_id(steam_id):
         url = steam_url.format(app.config["STEAM_API_KEY"], steam_id)
         steam_user = requests.get(url).json()
         players = steam_user["response"]["players"]
-        if len(players) > 0:
+        if players:
             player = {"name": players[0]["personaname"]}
             steam_id_cache.set(steam_id, player)
         else:

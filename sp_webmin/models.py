@@ -11,12 +11,12 @@ from flask.ext.login import UserMixin, AnonymousUserMixin
 from . import db
 from . import app
 
-Base = db.Model
+tablebase = db.Model
 
 steam_url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key={}&steamids={}"
 parents_table = Table(
     'parents',
-    Base.metadata,
+    tablebase.metadata,
     Column('parent_id', Integer, ForeignKey('objects.id'), primary_key=True),
     Column('child_id', Integer, ForeignKey('objects.id'), primary_key=True)
 )
@@ -73,7 +73,7 @@ class AnonymousUser(PermissionBase, AnonymousUserMixin):
         self.permissions.update([perm.node for perm in guest_group.permissions])
 
 
-class User(PermissionBase, Base, UserMixin):
+class User(PermissionBase, tablebase, UserMixin):
     __tablename__ = "users"
     id = Column(Integer, unique=True, primary_key=True, autoincrement=True)
     email = Column(String(256), unique=True, nullable=True)
@@ -110,7 +110,7 @@ class User(PermissionBase, Base, UserMixin):
         return "User: {}:{}:{}".format(self.username, self.email, self.steamid)
 
 
-class Permission(Base):
+class Permission(tablebase):
     __tablename__ = 'permissions'
     __table_args__ = (UniqueConstraint('object_id', 'server_id', 'node',
                                        name='object_server_node_uc'),)
@@ -121,7 +121,7 @@ class Permission(Base):
     node = Column(String(255), nullable=False)
 
 
-class PermissionObject(Base):
+class PermissionObject(tablebase):
     __tablename__ = 'objects'
     __table_args__ = (UniqueConstraint(
         'identifier', 'object_type', name='identifier_type_uc'),)
@@ -153,7 +153,7 @@ class PermissionObject(Base):
         self.formattedSteamId = self.identifier
         if self.type == "Player":
             steam_user = requests.get(steam_url.format(app.config["STEAM_API_KEY"], self.identifier)).json()
-            if len(steam_user["response"]["players"]) > 0:
+            if steam_user["response"]["players"]:
                 self.name = steam_user['response']['players'][0]['personaname']
                 self.avatarUrl = steam_user["response"]["players"][0]["avatarmedium"]
                 self.steamUrl = steam_user["response"]["players"][0]["profileurl"]
@@ -171,13 +171,13 @@ class PermissionObject(Base):
         return obj
 
     def get_permissions(self):
-        return set([perm.node for perm in self.permissions if perm.server_id == -1])
+        return {perm.node for perm in self.permissions if perm.server_id == -1}
 
     def get_permission_heirarchy(self):
         perms = list()
         perms.append(self.identifier)
         perms.append([(perm.node, perm.server_id) for perm in self.permissions])
-        if len(self.parents) > 0:
+        if self.parents:
             parents = []
             for parent in self.parents:
                 parents.append(parent.get_permission_heirarchy())
@@ -205,11 +205,8 @@ class PermissionObject(Base):
             perms.extend(parent.flatten_permissions())
         return perms
 
-    def __repr__(self):
-        return "User: {}:{}".format(self.identifier, self.type)
 
-
-class Server(Base):
+class Server(tablebase):
     __tablename__ = "servers"
 
     id = Column(Integer, primary_key=True)

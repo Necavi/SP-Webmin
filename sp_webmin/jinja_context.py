@@ -29,9 +29,9 @@ def td_format(td_object):
                 if seconds > period_seconds:
                         period_value, seconds = divmod(seconds, period_seconds)
                         if period_value == 1:
-                                strings.append("%s %s" % (period_value, period_name))
+                                strings.append("{} {}".format(period_value, period_name))
                         else:
-                                strings.append("%s %ss" % (period_value, period_name))
+                                strings.append("{} {}s".format(period_value, period_name))
 
         return ", ".join(strings)
 
